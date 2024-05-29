@@ -11,11 +11,12 @@ import numpy as np
 
 i = 0
 main_window = None
+solution = None
 
 
 class MplCanvas(FigureCanvas):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, parent=None, width=10, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
@@ -36,20 +37,28 @@ class GraphicWindow(QWidget):
         self.plot_data()
 
     def plot_data(self):
+        sol = mainSolve.solveDiffEq()
         t = sol.t
+        print('update ', sol.y[0][0], ' ', sol.y[2][0])
         y = None
         label_title = "Ec(t)"
         label_x = "t"
         label_y = "Ec"
         if self.flag == 0:
-            y = mainSolve.potential_energy()
+            y = np.array(mainSolve.potential_energy())
             label_title = "Ep(t)"
             label_x = "t"
             label_y = "Ep"
         elif self.flag == 1:
-            y = mainSolve.cinetic_energu()
+            y = np.array(mainSolve.cinetic_energu())
         elif self.flag == 2:
-            y = np.zeros(len(mainSolve.cinetic_energu()))
+            # y = np.zeros(len(mainSolve.cinetic_energu()))
+            pot_en = mainSolve.potential_energy()
+            cin_en = mainSolve.cinetic_energu()
+            y = [0] * len(pot_en)
+            for i in range(0, len(pot_en)):
+                y[i] = pot_en[i] + cin_en[i]
+            y = np.array(y)
             label_title = "Eabs(t)"
             label_x = "t"
             label_y = "Eabs"
@@ -72,17 +81,27 @@ class GraphicWindow(QWidget):
 
 
 def start_calculate():
-    mainSolve.k1 = int(main_window.k1_text_input.text())
-    mainSolve.k2 = int(main_window.k2_text_input.text())
-    mainSolve.l = int(main_window.l_text_input.text())
+    mainSolve.k1 = float(main_window.k1_text_input.text())
+    mainSolve.k2 = float(main_window.k2_text_input.text())
+    mainSolve.l = float(main_window.l_text_input.text())
     # print(int(main_window.l_text_input.text()))
-    mainSolve.x_0 = int(main_window.x0_text_input.text())
-
-    mainSolve.y_0 = int(main_window.y0_text_input.text())
-    mainSolve.sol = mainSolve.solveDiffEq()
-
+    mainSolve.x_0 = float(main_window.x0_text_input.text())
+    mainSolve.y_0 = float(main_window.y0_text_input.text())
+    mainSolve.vx_ = float(main_window.vx_text_input.text())
+    mainSolve.vy_ = float(main_window.vy_text_input.text())
+    global solution
+    solution = mainSolve.solveDiffEq()
+    # print(sol.y[0][0])
+    # print(sol.y[2][0])
     area = main_window.get_area()
     area.timer.start(10)
+    main_window.potential_graph = GraphicWindow(0)
+    print(solution)
+    # app = QApplication(sys.argv)
+    # main_window = MainWindow()
+    # main_window.show()
+    # sys.exit(app.exec_())
+
     print('Start')
 
 
@@ -100,8 +119,9 @@ class MovingRectangleWidget(QWidget):
         self.timer.timeout.connect(self.update_position)
 
     def update_position(self):
-        global i
-        print(sol.y[0][i], sol.y[1][i])
+        global i, solution
+        sol = solution
+        # print(sol.y[0][i], sol.y[1][i])
         self.rect_x = int(sol.y[0][i] * 100) + 150
         self.rect_y = -int(sol.y[2][i] * 100) + 150
         i += 1
@@ -156,6 +176,7 @@ class MainWindow(QMainWindow):
         self.m_input = QLabel("m = ")
         self.m_text_input = QLineEdit()
         self.m_text_input.setText(str(5))
+        self.m_text_input.setFixedWidth(100)
         h_m_layout.addWidget(self.m_input)
         h_m_layout.addWidget(self.m_text_input)
 
@@ -166,6 +187,7 @@ class MainWindow(QMainWindow):
         self.k1_input = QLabel("k1 = ")
         self.k1_text_input = QLineEdit()
         self.k1_text_input.setText(str(7))
+        self.k1_text_input.setFixedWidth(100)
         k1_layout.addWidget(self.k1_input)
         k1_layout.addWidget(self.k1_text_input)
 
@@ -174,8 +196,11 @@ class MainWindow(QMainWindow):
 
         k2_layout = QHBoxLayout()
         self.k2_input = QLabel("k2 = ")
+        # self.k2_input.setFixedSize(100)
         self.k2_text_input = QLineEdit()
         self.k2_text_input.setText(str(7))
+        self.k2_text_input.setFixedWidth(100)
+        # self.k2_text_input.setStyleSheet("QLineEdit { width: 10px; }")
         k2_layout.addWidget(self.k2_input)
         k2_layout.addWidget(self.k2_text_input)
 
@@ -186,6 +211,7 @@ class MainWindow(QMainWindow):
         self.l_input = QLabel("l = ")
         self.l_text_input = QLineEdit()
         self.l_text_input.setText(str(3))
+        self.l_text_input.setFixedWidth(100)
         l_layout.addWidget(self.l_input)
         l_layout.addWidget(self.l_text_input)
 
@@ -196,6 +222,7 @@ class MainWindow(QMainWindow):
         self.x0_input = QLabel("x0 = ")
         self.x0_text_input = QLineEdit()
         self.x0_text_input.setText(str(1))
+        self.x0_text_input.setFixedWidth(100)
         x0_layout.addWidget(self.x0_input)
         x0_layout.addWidget(self.x0_text_input)
 
@@ -206,11 +233,34 @@ class MainWindow(QMainWindow):
         self.y0_input = QLabel("y0 = ")
         self.y0_text_input = QLineEdit()
         self.y0_text_input.setText(str(1))
+        self.y0_text_input.setFixedWidth(100)
         y0_layout.addWidget(self.y0_input)
         y0_layout.addWidget(self.y0_text_input)
 
         container_y0 = QWidget()
         container_y0.setLayout(y0_layout)
+
+        vx_layout = QHBoxLayout()
+        self.vx_input = QLabel("vx = ")
+        self.vx_text_input = QLineEdit()
+        self.vx_text_input.setText(str(0))
+        self.vx_text_input.setFixedWidth(100)
+        vx_layout.addWidget(self.vx_input)
+        vx_layout.addWidget(self.vx_text_input)
+
+        container_vx = QWidget()
+        container_vx.setLayout(vx_layout)
+
+        vy_layout = QHBoxLayout()
+        self.vy_input = QLabel("vy = ")
+        self.vy_text_input = QLineEdit()
+        self.vy_text_input.setText(str(0))
+        self.vy_text_input.setFixedWidth(100)
+        vy_layout.addWidget(self.vy_input)
+        vy_layout.addWidget(self.vy_text_input)
+
+        container_vy = QWidget()
+        container_vy.setLayout(vy_layout)
 
         start_btn_layout = QHBoxLayout()
         self.start_btn = QPushButton('Start!')
@@ -220,15 +270,15 @@ class MainWindow(QMainWindow):
         container_start_btn = QWidget()
         container_start_btn.setLayout(start_btn_layout)
 
-        potential_graph = GraphicWindow(0)
+        self.potential_graph = GraphicWindow(0)
         cinetic_graph = GraphicWindow(1)
         absalut_graph = GraphicWindow(2)
         x_t_graph = GraphicWindow(3)
         y_t_graph = GraphicWindow(4)
         graph_layout = QHBoxLayout()
-        graph_layout.addWidget(potential_graph)
+        graph_layout.addWidget(self.potential_graph)
         graph_layout.addWidget(cinetic_graph)
-        graph_layout.addWidget(absalut_graph)
+        # graph_layout.addWidget(absalut_graph)
         graph_layout.addWidget(x_t_graph)
         graph_layout.addWidget(y_t_graph)
 
@@ -238,11 +288,15 @@ class MainWindow(QMainWindow):
         v_layout.addWidget(container_l)
         v_layout.addWidget(container_x0)
         v_layout.addWidget(container_y0)
+        v_layout.addWidget(container_vx)
+        v_layout.addWidget(container_vy)
         v_layout.addWidget(container_start_btn)
+
         container1 = QWidget()
         container1.setLayout(v_layout)
 
         layout_first.addWidget(container1)
+        layout_first.addWidget(absalut_graph)
         container_first = QWidget()
         container_first.setLayout(layout_first)
         container_graph = QWidget()
