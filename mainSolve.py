@@ -80,8 +80,8 @@ def solveDiffEq():
 def potential_energy():
     sol1 = solveDiffEq()
     arr = []
-    for i in range(len(sol.y[0])):
-        delta_l_left = abs(math.sqrt((l + sol.y[0][i]) ** 2 + sol.y[2][i] ** 2) - l) ** 2
+    for i in range(len(sol1.y[0])):
+        delta_l_left = abs(math.sqrt((l + sol1.y[0][i]) ** 2 + sol1.y[2][i] ** 2) - l) ** 2
         arr.append(k1 * delta_l_left / 2)
     return arr
 
