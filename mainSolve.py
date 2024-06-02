@@ -67,13 +67,8 @@ def solveDiffEq():
     # print('x0 = ', x0, 'y = ', y0)
     t_span = (0, 200)
     t_eval = np.linspace(t_span[0], t_span[1], (t_span[1] - t_span[0]) * 100)
-    # print(t_eval, len(t_eval))
     # Решение системы ОДУ
     sol1 = solve_ivp(system, t_span, z0, t_eval=t_eval)
-    # sol = sol1
-    # print('x = ',sol.y[0][0])
-    # print('y = ', sol.y[2][0])
-    # print(sol1)
     return sol1
 
 

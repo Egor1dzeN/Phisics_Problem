@@ -111,7 +111,7 @@ class GraphicWindow(QWidget):
             cin_en = mainSolve.cinetic_energu()
             y = [0] * len(pot_en)
             for i in range(0, len(pot_en)):
-                y[i] = pot_en[i] + cin_en[i]
+                y[i] = round(pot_en[i] + cin_en[i], 1)
             y = np.array(y)
             label_title = "Eabs(t)"
             label_x = "t"
@@ -150,18 +150,25 @@ def start_calculate():
     GraphicWindow2.update_plot()
     GraphicWindow3.update_plot()
     GraphicWindow4.update_plot()
-    # print(sol.y[0][0])
-    # print(sol.y[2][0])
     area = main_window.get_area()
     area.timer.start(10)
-    main_window.potential_graph = GraphicWindow(0)
-    print(solution)
-    # app = QApplication(sys.argv)
-    # main_window = MainWindow()
-    # main_window.show()
-    # sys.exit(app.exec_())
 
     print('Start')
+
+
+def stopCalculate():
+    area = main_window.get_area()
+    area.timer.stop()
+    print("Stop!!")
+    main_window.red_area = MovingRectangleWidget()
+
+
+def open_new_window(self):
+    global main_window
+    main_window.close()
+    new_window = MainWindow()
+    new_window.show()
+    main_window = new_window
 
 
 class MovingRectangleWidget(QWidget):
@@ -338,8 +345,22 @@ class MainWindow(QMainWindow):
         start_btn_layout.addWidget(self.start_btn)
         self.start_btn.clicked.connect(start_calculate)
 
+        stop_btn_layout = QHBoxLayout()
+        self.stop_btn = QPushButton('Stop!')
+        stop_btn_layout.addWidget(self.stop_btn)
+        self.stop_btn.clicked.connect(stopCalculate)
+
+        reset_btn_layout = QHBoxLayout()
+        self.reset_btn = QPushButton('Reset')
+        reset_btn_layout.addWidget(self.reset_btn)
+        self.reset_btn.clicked.connect(open_new_window)
+
         container_start_btn = QWidget()
         container_start_btn.setLayout(start_btn_layout)
+        container_stop_btn = QWidget()
+        container_stop_btn.setLayout(stop_btn_layout)
+        container_reset_btn = QWidget()
+        container_reset_btn.setLayout(reset_btn_layout)
         global GraphicWindow0, GraphicWindow1, GraphicWindow2, GraphicWindow3, GraphicWindow4
         GraphicWindow0 = GraphicWindow(0)
         GraphicWindow1 = GraphicWindow(1)
@@ -367,6 +388,8 @@ class MainWindow(QMainWindow):
         v_layout.addWidget(container_vx)
         v_layout.addWidget(container_vy)
         v_layout.addWidget(container_start_btn)
+        v_layout.addWidget(container_stop_btn)
+        v_layout.addWidget(container_reset_btn)
         # v_layout.set
 
         container1 = QWidget()
