@@ -62,10 +62,13 @@ class GraphicWindow(QWidget):
             # y = np.zeros(len(mainSolve.cinetic_energu()))
             pot_en = mainSolve.potential_energy()
             cin_en = mainSolve.cinetic_energu()
+            print(pot_en[0], cin_en[0])
             y = [0] * len(pot_en)
-            for i in range(0, len(pot_en)):
-                y[i] = pot_en[i] + cin_en[i]
+            for i in range(0, 2000):
+                y[i] = round(pot_en[i] + cin_en[i], 1)
+            print(y[0])
             y = np.array(y)
+            print(y[0])
             label_title = "Eabs(t)"
             label_x = "t"
             label_y = "Eabs"
@@ -164,8 +167,10 @@ def start_calculate():
 class MovingRectangleWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.rect_x = 250
-        self.rect_y = 50
+        self.rect_x1 = 250
+        self.rect_y1 = 50
+        self.trace_x1 = []
+        self.trace_y1 = []
         self.rect_width = 10
         self.rect_height = 10
         self.dx = 2
@@ -178,16 +183,18 @@ class MovingRectangleWidget(QWidget):
         global i, solution
         sol = solution
         # print(sol.y[0][i], sol.y[1][i])
-        self.rect_x = int(sol.y[0][i] * 100) + 145
-        self.rect_y = -int(sol.y[2][i] * 100) + 145
+        self.rect_x1 = int(sol.y[0][i] * 100) + 145
+        self.rect_y1 = -int(sol.y[2][i] * 100) + 145
+        self.trace_x1.append(self.rect_x1 + 5)
+        self.trace_y1.append(self.rect_y1 + 5)
+
         i += 1
         # print(self.rect_x, self.rect_y)
-        if self.rect_x < 0 or self.rect_x + self.rect_width > self.width():
-            self.dx = -self.dx
-        if self.rect_y < 0 or self.rect_y + self.rect_height > self.height():
-            self.dy = -self.dy
 
         self.update()
+
+    def paintCube(self):
+        pass
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -196,9 +203,16 @@ class MovingRectangleWidget(QWidget):
         painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
         painter.drawRect(0, 0, self.width(), self.height())
         painter.setBrush(QColor(0, 0, 255))
-        painter.drawRect(self.rect_x, self.rect_y, self.rect_width, self.rect_height)
+        painter.drawRect(self.rect_x1, self.rect_y1, self.rect_width, self.rect_height)
         painter.drawLine(0, self.height() // 2, int(self.width()), self.height() // 2)
         painter.drawLine(self.width() // 2, 0, self.width() // 2, int(self.height()))
+        pen = QPen(QColor(200, 200, 200), 5)
+        painter.setPen(pen)
+        # painter.drawPoint(self.trace_x1[0], self.trace_y1[0])
+        # painter.drawPoint(145, 145)
+        for j in range(len(self.trace_x1)):
+            # print('trace x -', int(self.trace_x1[j]), int(self.trace_y1[j]))
+            painter.drawPoint(int(self.trace_x1[j]), int(self.trace_y1[j]))
 
 
 class MainWindow(QMainWindow):
@@ -326,7 +340,7 @@ class MainWindow(QMainWindow):
 
         container_start_btn = QWidget()
         container_start_btn.setLayout(start_btn_layout)
-        global GraphicWindow0,GraphicWindow1, GraphicWindow2, GraphicWindow3, GraphicWindow4
+        global GraphicWindow0, GraphicWindow1, GraphicWindow2, GraphicWindow3, GraphicWindow4
         GraphicWindow0 = GraphicWindow(0)
         GraphicWindow1 = GraphicWindow(1)
         GraphicWindow2 = GraphicWindow(2)

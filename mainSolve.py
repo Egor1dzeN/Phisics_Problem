@@ -64,7 +64,7 @@ def solveDiffEq():
     x0 = [x_0, vx_]  # x(0) = 1, x'(0) = 0
     y0 = [y_0, vy_]  # y(0) = 1, y'(0) = 0
     z0 = x0 + y0
-    print('x0 = ', x0, 'y = ', y0)
+    # print('x0 = ', x0, 'y = ', y0)
     t_span = (0, 200)
     t_eval = np.linspace(t_span[0], t_span[1], (t_span[1] - t_span[0]) * 100)
     # print(t_eval, len(t_eval))
