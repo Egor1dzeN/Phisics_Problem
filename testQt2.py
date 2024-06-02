@@ -1,3 +1,4 @@
+import math
 import sys
 from random import random
 
@@ -143,6 +144,9 @@ def start_calculate():
     mainSolve.y_0 = float(main_window.y0_text_input.text())
     mainSolve.vx_ = float(main_window.vx_text_input.text())
     mainSolve.vy_ = float(main_window.vy_text_input.text())
+    T_teor, T_prac = main_window.getPeriod()
+    main_window.T_teor_input.setText(f'Tteor = {T_teor}')
+    main_window.T_prac_input.setText(f'Tprac = {T_prac}')
     global solution, GraphicWindow1
     solution = mainSolve.solveDiffEq()
     GraphicWindow0.update_plot()
@@ -164,7 +168,8 @@ def stopCalculate():
 
 
 def open_new_window(self):
-    global main_window
+    global main_window, i
+    i = 0
     main_window.close()
     new_window = MainWindow()
     new_window.show()
@@ -340,6 +345,16 @@ class MainWindow(QMainWindow):
         container_vy = QWidget()
         container_vy.setLayout(vy_layout)
 
+        T_layout = QHBoxLayout()
+        T_teor, T_prac = self.getPeriod()
+        self.T_teor_input = QLabel(f'Tteor = {T_teor}')
+        self.T_prac_input = QLabel(f'Tprac = {T_prac}')
+        T_layout.addWidget(self.T_teor_input)
+        T_layout.addWidget(self.T_prac_input)
+
+        container_T = QWidget()
+        container_T.setLayout(T_layout)
+
         start_btn_layout = QHBoxLayout()
         self.start_btn = QPushButton('Start!')
         start_btn_layout.addWidget(self.start_btn)
@@ -387,6 +402,7 @@ class MainWindow(QMainWindow):
         v_layout.addWidget(container_y0)
         v_layout.addWidget(container_vx)
         v_layout.addWidget(container_vy)
+        v_layout.addWidget(container_T)
         v_layout.addWidget(container_start_btn)
         v_layout.addWidget(container_stop_btn)
         v_layout.addWidget(container_reset_btn)
@@ -411,6 +427,20 @@ class MainWindow(QMainWindow):
 
     def get_area(self):
         return self.red_area
+
+    def getPeriod(self):
+        T_teor = 2 * math.pi * math.sqrt(mainSolve.m / mainSolve.k1)
+        sol = mainSolve.solveDiffEq()
+        begin = 0
+        end = 0
+        for i in range(len(sol.y[2]) - 1):
+            if sol.y[2][i] > 0 and sol.y[2][i + 1] <= 0:
+                begin = i
+            elif sol.y[2][i] <= 0 and sol.y[2][i + 1] > 0 and begin != 0:
+                end = i
+                break
+        T_pract = (end - begin) / 100
+        return round(T_teor, 1), round(T_pract, 1)
 
 
 if __name__ == '__main__':
