@@ -164,7 +164,6 @@ def stopCalculate():
     area = main_window.get_area()
     area.timer.stop()
     print("Stop!!")
-    main_window.red_area = MovingRectangleWidget()
 
 
 def open_new_window(self):
@@ -434,9 +433,9 @@ class MainWindow(QMainWindow):
         begin = 0
         end = 0
         for i in range(len(sol.y[2]) - 1):
-            if sol.y[2][i] > 0 and sol.y[2][i + 1] <= 0:
+            if sol.y[0][i] > 0 and sol.y[0][i + 1] <= 0:
                 begin = i
-            elif sol.y[2][i] <= 0 and sol.y[2][i + 1] > 0 and begin != 0:
+            elif sol.y[0][i] <= 0 and sol.y[0][i + 1] > 0 and begin != 0:
                 end = i
                 break
         T_pract = (end - begin) / 100
