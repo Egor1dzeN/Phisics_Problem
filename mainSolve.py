@@ -16,7 +16,7 @@ list_delta_l_right = []
 sol = None
 
 
-def funcAx(x, y):
+def f(x, y):
     global k1, k2, l, m
     len_left = math.sqrt((l + x) ** 2 + y ** 2)
 
@@ -31,7 +31,16 @@ def funcAx(x, y):
     return (sum1 + sum2) / m
 
 
-def funcBy(x, y):
+def g(x, y):
+    global k1, k2, l, m
+    len_left = math.sqrt((l + x) ** 2 + y ** 2)
+    sum1 = -k1 * (len_left - l) * y / len_left
+    len_right = math.sqrt((l - x) ** 2 + y ** 2)
+    sum2 = -k2 * (len_right - l) * y / len_right
+    return (sum1 + sum2) / m
+
+
+def g1(x, y):
     global k1, k2, l, m
     len_left = math.sqrt((l + x) ** 2 + y ** 2)
     # print(len_left)
@@ -42,7 +51,30 @@ def funcBy(x, y):
     sum2 = k2 * (len_right - l) * y / len_right
     # print(sum2)
     # print(sum1 + sum2)
-    return (sum1 + sum2) / m
+    return -2 * k1 / m * (math.sqrt(l ** 2 + y ** 2) - l) * y / (math.sqrt(l ** 2 + y ** 2))
+
+
+def solve(time: int, x0, y0, vx0, vy0):
+    count = time * 100
+    del_t = 0.01
+    arrx = [x0]
+    arry = [y0]
+    arrvx = [vx0]
+    arrvy = [vy0]
+    for i in range(count):
+        k1x = f(arrx[i], arry[i])
+        k1y = g(arrx[i], arry[i])
+        k2x = f(arrx[i] + arrvx[i] * del_t / 2, arry[i] + arrvy[i] * del_t / 2)
+        k2y = g(arrx[i] + arrvx[i] * del_t / 2, arry[i] + arrvy[i] * del_t / 2)
+        k3x = f(arrx[i] + arrvx[i] * del_t / 2 + k1x / 4, arry[i] + arrvy[i] * del_t / 2 + k1y / 4)
+        k3y = g(arrx[i] + arrvx[i] * del_t / 2 + k1x / 4, arry[i] + arrvy[i] * del_t / 2 + k1y / 4)
+        k4x = f(arrx[i] + arrvx[i] * del_t + k2x * del_t / 2, arry[i] + arrvy[i] * del_t + k2y * del_t / 2)
+        k4y = g(arrx[i] + arrvx[i] * del_t + k2x * del_t / 2, arry[i] + arrvy[i] * del_t + k2y * del_t / 2)
+        arrx.append(arrx[i] + arrvx[i] * del_t + 1 / 6 * (k1x + k2x + k3x) * del_t)
+        arrvx.append(arrvx[i] + 1 / 6 * (k1x + 2 * k2x + 2 * k3x + k4x))
+        arry.append(arry[i] + arrvy[i] * del_t + 1 / 6 * (k1y + k2y + k3y) * del_t)
+        arrvy.append(arrvy[i] + 1 / 6 * (k1y + 2 * k2y + 2 * k3y + k4y))
+    return arrx, arry
 
 
 i = 0
@@ -51,9 +83,9 @@ i = 0
 def system(t, z):
     x1, x2, y1, y2 = z
     dx1_dt = x2
-    dx2_dt = funcAx(x1, y1)
+    dx2_dt = f(x1, y1)
     dy1_dt = y2
-    dy2_dt = funcBy(x1, y1)
+    dy2_dt = g(x1, y1)
     global i
     i += 1
     # print(i)
@@ -95,8 +127,11 @@ def cinetic_energu():
     arr.append(6)
     '''
     for i in range(1, len(arr_pot)):
-        arr[i] = arr[i-1] + (arr_pot[i-1] - arr_pot[i])
+        arr[i] = arr[i - 1] + (arr_pot[i - 1] - arr_pot[i])
     return arr
 
 
 sol = solveDiffEq()
+# x, y = solve(10, 0, 2, 0, 0)
+# for i in range(100):
+#     print(f'x = {x[i]}, y = {y[i]}')
