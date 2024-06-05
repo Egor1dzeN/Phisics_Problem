@@ -15,24 +15,12 @@ import numpy as np
 i = 0
 main_window = None
 solution = None
-x = []
-y = []
+solution1 = None
 GraphicWindow0 = None
 GraphicWindow1 = None
 GraphicWindow2 = None
 GraphicWindow3 = None
 GraphicWindow4 = None
-x0 = 0
-y0 = 0
-vx0 = 0
-vy0 = 0
-p = False
-def changeP():
-    global p
-    if p:
-        p = False
-    else:
-        p = True
 
 
 class MplCanvas(FigureCanvas):
@@ -60,7 +48,9 @@ class GraphicWindow(QWidget):
     def plot_data(self):
         sol = mainSolve.solveDiffEq()
         t = sol.t
-        # print('update ', sol.y[0][0], ' ', sol.y[2][0])
+        print('update ', sol.y[0][0], ' ', sol.y[2][0])
+        global solution1
+        x, y1 = mainSolve.solve()
         y = None
         label_title = "Ec(t)"
         label_x = "t"
@@ -76,18 +66,21 @@ class GraphicWindow(QWidget):
             # y = np.zeros(len(mainSolve.cinetic_energu()))
             pot_en = mainSolve.potential_energy()
             cin_en = mainSolve.cinetic_energu()
-            # print(pot_en[0], cin_en[0])
+            print(pot_en[0], cin_en[0])
             y = [0] * len(pot_en)
-            for i in range(0, 2000):
+            for i in range(0, 10000):
                 y[i] = round(pot_en[i] + cin_en[i], 1)
-            # print(y[0])
+            print(y[0])
             y = np.array(y)
-            # print(y[0])
+            print(y[0])
             label_title = "Eabs(t)"
             label_x = "t"
             label_y = "Eabs"
         elif self.flag == 3:
-            y = mainSolve.solveDiffEq().y[0]
+            if x[0] == 0:
+                y = y1
+            else:
+                y = mainSolve.solveDiffEq().y[0]
             label_title = "x(t)"
             label_x = "t"
             label_y = "x"
@@ -97,7 +90,7 @@ class GraphicWindow(QWidget):
             label_x = "t"
             label_y = "y"
         self.canvas.axes.clear()
-        self.canvas.axes.plot(t[:2000], y[:2000])
+        self.canvas.axes.plot(t[:10000], y[:10000])
         self.canvas.axes.set_title(label_title)
         self.canvas.axes.set_xlabel(label_x)
         self.canvas.axes.set_ylabel(label_y)
@@ -105,7 +98,9 @@ class GraphicWindow(QWidget):
 
     def update_plot(self):
         print('update - ', self)
-        sol = mainSolve.solveDiffEq()
+        global solution, solution1
+        sol = solution
+        x, y1 = solution1
         t = sol.t
         print('update ', sol.y[0][0], ' ', sol.y[2][0])
         y = None
@@ -113,7 +108,11 @@ class GraphicWindow(QWidget):
         label_x = "t"
         label_y = "Ec"
         if self.flag == 0:
-            y = np.array(mainSolve.potential_energy())
+            y = 0
+            if x[0] != 0:
+                y = np.array(mainSolve.potential_energy())
+            else:
+                y = np.array(mainSolve.potential_energy(True))
             label_title = "Ep(t)"
             label_x = "t"
             label_y = "Ep"
@@ -136,12 +135,15 @@ class GraphicWindow(QWidget):
             label_x = "t"
             label_y = "x"
         elif self.flag == 4:
-            y = mainSolve.solveDiffEq().y[2]
+            if x[0] == 0:
+                y = y1
+            else:
+                y = mainSolve.solveDiffEq().y[2]
             label_title = "y(t)"
             label_x = "t"
             label_y = "y"
         self.canvas.axes.clear()
-        self.canvas.axes.plot(t[:2000], y[:2000])
+        self.canvas.axes.plot(t[:10000], y[:10000])
         self.canvas.axes.set_title(label_title)
         self.canvas.axes.set_xlabel(label_x)
         self.canvas.axes.set_ylabel(label_y)
@@ -149,27 +151,24 @@ class GraphicWindow(QWidget):
 
 
 def start_calculate():
-    print("Start calculate")
-    global x0, y0, vx0, vy0
     mainSolve.k1 = float(main_window.k1_text_input.text())
     mainSolve.k2 = float(main_window.k2_text_input.text())
     mainSolve.l = float(main_window.l_text_input.text())
+    # print(int(main_window.l_text_input.text()))
     mainSolve.x_0 = float(main_window.x0_text_input.text())
-    x0 = float(main_window.x0_text_input.text())
     mainSolve.y_0 = float(main_window.y0_text_input.text())
-    y0 = float(main_window.y0_text_input.text())
     mainSolve.vx_ = float(main_window.vx_text_input.text())
-    vx0 = float(main_window.vx_text_input.text())
-
     mainSolve.vy_ = float(main_window.vy_text_input.text())
-    vy0 = float(main_window.vy_text_input.text())
+    if mainSolve.x_0 == 0:
+        mainSolve.flag = True
+    else:
+        mainSolve.flag = False
     T_teor, T_prac = main_window.getPeriod()
     main_window.T_teor_input.setText(f'Tteor = {T_teor}')
-    main_window.T_prac_input.setText(f'Tprac = {T_prac * 2}')
-    global solution, GraphicWindow1, x, y
-    # x, y = mainSolve.solve(20,
-    #                        main_window.x0_text_input.text(), main_window.y0_text_input.text(),
-    #                        main_window.vx_text_input.text(), main_window.vy_text_input.text())
+    main_window.T_prac_input.setText(f'Tprac = {T_prac}')
+    global solution, GraphicWindow1, solution1
+    solution = mainSolve.solveDiffEq()
+    solution1 = mainSolve.solve()
     GraphicWindow0.update_plot()
     GraphicWindow1.update_plot()
     GraphicWindow2.update_plot()
@@ -212,18 +211,22 @@ class MovingRectangleWidget(QWidget):
         self.timer.timeout.connect(self.update_position)
 
     def update_position(self):
-        global i, x0, y0, vx0, vy0
-        x, y = mainSolve.solve(20, x0, y0, vx0, vy0)
-        print("dasdas")
-        print(x[:20], y[0:20])
-        # x = mainSolve.solveDiffEq()
-        self.rect_x1 = int(x[i] * 100) + 145
-        self.rect_y1 = -int(y[i] * 100) + 145
+        global i, solution, solution1
+        sol = solution
+        x, y = solution1
+        if (x[0] == 0):
+            self.rect_x1 = int(x[i] * 100) + 145
+            self.rect_y1 = -int(y[i] * 100) + 145
+        else:
+            self.rect_x1 = int(sol.y[0][i] * 100) + 145
+            self.rect_y1 = -int(sol.y[2][i] * 100) + 145
+        # print(sol.y[0][i], sol.y[1][i])
+
         self.trace_x1.append(self.rect_x1 + 5)
         self.trace_y1.append(self.rect_y1 + 5)
 
         i += 1
-        print(self.rect_x1, self.rect_y1)
+        # print(self.rect_x, self.rect_y)
 
         self.update()
 
@@ -240,16 +243,21 @@ class MovingRectangleWidget(QWidget):
         painter.drawRect(self.rect_x1, self.rect_y1, self.rect_width, self.rect_height)
         painter.drawLine(0, self.height() // 2, int(self.width()), self.height() // 2)
         painter.drawLine(self.width() // 2, 0, self.width() // 2, int(self.height()))
-        pen = QPen(QColor(0, 29, 24), 2)
+        pen = QPen(QColor(200, 200, 200), 5)
         painter.setPen(pen)
+        # painter.drawPoint(self.trace_x1[0], self.trace_y1[0])
+        # painter.drawPoint(145, 145)
         for j in range(len(self.trace_x1)):
+            # print('trace x -', int(self.trace_x1[j]), int(self.trace_y1[j]))
             painter.drawPoint(int(self.trace_x1[j]), int(self.trace_y1[j]))
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        # super().showMaximized()
         self.setWindowTitle('Модель физической задачи (тело находиться между двумя пружинами)')
+        # self.setGeometry(50, 50, 1500, 1000)
 
         # Создание основного виджета
         central_widget = QWidget()
@@ -361,9 +369,13 @@ class MainWindow(QMainWindow):
 
         container_vy = QWidget()
         container_vy.setLayout(vy_layout)
-        self.checkBox = QCheckBox("P: ", self)
-        self.checkBox.stateChanged.connect(changeP)
+        self.checkBox1 = QCheckBox("Right")
+        self.checkBox2 = QCheckBox("Up")
+        self.checkBox3 = QCheckBox("Down")
 
+        self.checkBox1.stateChanged.connect(self.check1)
+        self.checkBox2.stateChanged.connect(self.check2)
+        self.checkBox3.stateChanged.connect(self.check3)
 
         T_layout = QHBoxLayout()
         T_teor, T_prac = self.getPeriod()
@@ -423,7 +435,9 @@ class MainWindow(QMainWindow):
         v_layout.addWidget(container_vx)
         v_layout.addWidget(container_vy)
         v_layout.addWidget(container_T)
-        v_layout.addWidget(self.checkBox)
+        v_layout.addWidget(self.checkBox1)
+        v_layout.addWidget(self.checkBox2)
+        v_layout.addWidget(self.checkBox3)
         v_layout.addWidget(container_start_btn)
         v_layout.addWidget(container_stop_btn)
         v_layout.addWidget(container_reset_btn)
@@ -450,7 +464,7 @@ class MainWindow(QMainWindow):
         return self.red_area
 
     def getPeriod(self):
-        T_teor = 2 * math.pi * math.sqrt(mainSolve.m / (mainSolve.k1 + mainSolve.k2))
+        T_teor = 2 * math.pi * math.sqrt(mainSolve.m / mainSolve.k1)
         sol = mainSolve.solveDiffEq()
         begin = 0
         end = 0
@@ -461,7 +475,33 @@ class MainWindow(QMainWindow):
                 end = i
                 break
         T_pract = (end - begin) / 100
-        return round(T_teor, 1), round(T_pract, 1)
+        return round(T_teor , 2), 2 * round(T_pract * 1.5, 2)
+
+    def check1(self):
+
+        if self.checkBox1.isChecked():
+            mainSolve.f1 = 1
+        else:
+            mainSolve.f1 = 0
+        global solution1
+        solution1 = mainSolve.solve()
+
+    def check2(self):
+        if self.checkBox2.isChecked():
+            mainSolve.f1 = 2
+        else:
+            mainSolve.f1 = 0
+        global solution1
+        solution1 = mainSolve.solve()
+
+    def check3(self):
+        if self.checkBox3.isChecked():
+            print("3!!!")
+            mainSolve.f1 = 3
+        else:
+            mainSolve.f1 = 0
+        global solution1
+        solution1 = mainSolve.solve()
 
 
 if __name__ == '__main__':
