@@ -165,7 +165,7 @@ def start_calculate():
     vy0 = float(main_window.vy_text_input.text())
     T_teor, T_prac = main_window.getPeriod()
     main_window.T_teor_input.setText(f'Tteor = {T_teor}')
-    main_window.T_prac_input.setText(f'Tprac = {T_prac}')
+    main_window.T_prac_input.setText(f'Tprac = {T_prac * 2}')
     global solution, GraphicWindow1, x, y
     # x, y = mainSolve.solve(20,
     #                        main_window.x0_text_input.text(), main_window.y0_text_input.text(),
