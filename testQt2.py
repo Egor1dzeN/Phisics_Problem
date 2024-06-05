@@ -450,7 +450,7 @@ class MainWindow(QMainWindow):
         return self.red_area
 
     def getPeriod(self):
-        T_teor = 2 * math.pi * math.sqrt(mainSolve.m / (mainSolve.k1 * 2))
+        T_teor = 2 * math.pi * math.sqrt(mainSolve.m / (mainSolve.k1 + mainSolve.k2))
         sol = mainSolve.solveDiffEq()
         begin = 0
         end = 0
