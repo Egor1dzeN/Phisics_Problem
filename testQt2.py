@@ -90,7 +90,7 @@ class GraphicWindow(QWidget):
             label_x = "t"
             label_y = "y"
         self.canvas.axes.clear()
-        self.canvas.axes.plot(t[:10000], y[:10000])
+        self.canvas.axes.plot(t[:4000], y[:4000])
         self.canvas.axes.set_title(label_title)
         self.canvas.axes.set_xlabel(label_x)
         self.canvas.axes.set_ylabel(label_y)
@@ -143,7 +143,7 @@ class GraphicWindow(QWidget):
             label_x = "t"
             label_y = "y"
         self.canvas.axes.clear()
-        self.canvas.axes.plot(t[:10000], y[:10000])
+        self.canvas.axes.plot(t[:4000], y[:4000])
         self.canvas.axes.set_title(label_title)
         self.canvas.axes.set_xlabel(label_x)
         self.canvas.axes.set_ylabel(label_y)
