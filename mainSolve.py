@@ -16,7 +16,8 @@ list_delta_l_right = []
 f1 = 0
 sol = None
 flag = False
-
+j = 0
+imp = 10
 
 def funcAx(x, y):
     global k1, k2, l, m
@@ -120,7 +121,7 @@ def cinetic_energu():
 
 
 def solve():
-    global x_0, y_0, vx_, vy_, f1
+    global x_0, y_0, vx_, vy_, f1, j, imp
     x0 = x_0
     y0 = y_0
     vx0 = vx_
@@ -147,13 +148,13 @@ def solve():
         arrvy.append(arrvy[i] + 1 / 6 * (k1y + 2 * k2y + 2 * k3y + k4y))
         # print(f1)
         if f1 == 1 and 0.1 > arrx[len(arrx) - 1] > -0.1 and 0.1 > arry[len(arry) - 1] > -0.1:
-            arrvx[len(arrvx) - 1] += 10
-            # print("!!dsfsdhgj", arrx[len(arry)-1], len(arry)-1)
-            # print(arrvy[len(arrvy) - 1])
+            arrvx[len(arrvx) - 1] += imp
+            print(imp)
         if f1 == 2 and 0.1 > arry[len(arry) - 1] > -0.1:
-            arrvy[len(arrvy) - 1] += 10
+            arrvy[len(arrvy) - 1] += imp
         if f1 == 3 and 0.1 > arry[len(arry) - 1] > -0.1:
-            arrvy[len(arrvy) - 1] -= 10
+            arrvy[len(arrvy) - 1] -= imp
+
     return arrx, arry
 
 

@@ -159,6 +159,7 @@ def start_calculate():
     mainSolve.y_0 = float(main_window.y0_text_input.text())
     mainSolve.vx_ = float(main_window.vx_text_input.text())
     mainSolve.vy_ = float(main_window.vy_text_input.text())
+    mainSolve.imp = float(main_window.imp_text_input.text())
     if mainSolve.x_0 == 0:
         mainSolve.flag = True
     else:
@@ -369,6 +370,18 @@ class MainWindow(QMainWindow):
 
         container_vy = QWidget()
         container_vy.setLayout(vy_layout)
+
+        imp_layout = QHBoxLayout()
+        self.imp_input = QLabel("imp = ")
+        self.imp_text_input = QLineEdit()
+        self.imp_text_input.setText(str(10))
+        self.imp_text_input.setFixedWidth(100)
+        imp_layout.addWidget(self.imp_input)
+        imp_layout.addWidget(self.imp_text_input)
+
+        container_imp = QWidget()
+        container_imp.setLayout(imp_layout)
+
         self.checkBox1 = QCheckBox("Right")
         self.checkBox2 = QCheckBox("Up")
         self.checkBox3 = QCheckBox("Down")
@@ -434,6 +447,7 @@ class MainWindow(QMainWindow):
         v_layout.addWidget(container_y0)
         v_layout.addWidget(container_vx)
         v_layout.addWidget(container_vy)
+        v_layout.addWidget(container_imp)
         v_layout.addWidget(container_T)
         v_layout.addWidget(self.checkBox1)
         v_layout.addWidget(self.checkBox2)
