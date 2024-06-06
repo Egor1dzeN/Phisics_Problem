@@ -244,7 +244,7 @@ class MovingRectangleWidget(QWidget):
         painter.drawRect(self.rect_x1, self.rect_y1, self.rect_width, self.rect_height)
         painter.drawLine(0, self.height() // 2, int(self.width()), self.height() // 2)
         painter.drawLine(self.width() // 2, 0, self.width() // 2, int(self.height()))
-        pen = QPen(QColor(200, 200, 200), 5)
+        pen = QPen(QColor(20, 20, 20), 5)
         painter.setPen(pen)
         # painter.drawPoint(self.trace_x1[0], self.trace_y1[0])
         # painter.drawPoint(145, 145)
