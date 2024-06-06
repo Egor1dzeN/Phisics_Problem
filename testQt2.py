@@ -90,19 +90,19 @@ class GraphicWindow(QWidget):
             label_x = "t"
             label_y = "y"
         self.canvas.axes.clear()
-        self.canvas.axes.plot(t[:4000], y[:4000])
+        self.canvas.axes.plot(t[:2000], y[:2000])
         self.canvas.axes.set_title(label_title)
         self.canvas.axes.set_xlabel(label_x)
         self.canvas.axes.set_ylabel(label_y)
         self.canvas.draw()
 
     def update_plot(self):
-        print('update - ', self)
+        # print('update - ', self)
         global solution, solution1
         sol = solution
         x, y1 = solution1
         t = sol.t
-        print('update ', sol.y[0][0], ' ', sol.y[2][0])
+        # print('update ', sol.y[0][0], ' ', sol.y[2][0])
         y = None
         label_title = "Ec(t)"
         label_x = "t"
@@ -143,7 +143,7 @@ class GraphicWindow(QWidget):
             label_x = "t"
             label_y = "y"
         self.canvas.axes.clear()
-        self.canvas.axes.plot(t[:4000], y[:4000])
+        self.canvas.axes.plot(t[:2000], y[:2000])
         self.canvas.axes.set_title(label_title)
         self.canvas.axes.set_xlabel(label_x)
         self.canvas.axes.set_ylabel(label_y)
